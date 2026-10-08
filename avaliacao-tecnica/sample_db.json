@@ -1,0 +1,38 @@
+{
+  "_meta": {
+    "projeto": "Avaliação Técnica Agrosys - CRUD Web",
+    "autor": "Octavio Berroa Arias",
+    "data": "2026-10-08",
+    "versao": "1.0"
+  },
+  "usuarios": [
+    {
+      "id": 1,
+      "usuario": "admin",
+      "senha": "123"
+    }
+  ],
+  "clientes": [
+    {
+      "id": 1,
+      "nome": "Carlos Eduardo Silva",
+      "cpf": "123.456.789-00",
+      "data_nascimento": "1990-05-15",
+      "telefone": "4834330000",
+      "celular": "48999990000"
+    }
+  ],
+  "enderecos": [
+    {
+      "id": 1,
+      "cliente_id": 1,
+      "cep": "88820-000",
+      "rua": "Rua Altamiro Guimarães",
+      "bairro": "Centro",
+      "cidade": "Içara",
+      "estado": "SC",
+      "pais": "Brasil",
+      "is_principal": true
+    }
+  ]
+}

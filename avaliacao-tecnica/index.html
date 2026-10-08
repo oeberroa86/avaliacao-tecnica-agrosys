@@ -1,0 +1,310 @@
+<!--
+====================================================================
+* Projeto: Avaliação Técnica Agrosys - CRUD Web
+* Autor: Octavio Berroa Arias
+* Data: Outubro / 2026
+* Descrição: Sistema em Vanilla JS + AlaSQL com suporte a LocalStorage
+====================================================================
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Octavio Berroa Arias">
+    <meta name="description" content="Avaliação Técnica Agrosys - Sistema de Gestão de Clientes e Endereços">
+
+    <title>Avaliação Técnica Agrosys - CRUD Web</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 d-none" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Agrosys CRUD</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="nav-clientes" href="#" onclick="showSection('clientes')"><i class="fa-solid fa-users me-1"></i> Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-enderecos" href="#" onclick="showSection('enderecos')"><i class="fa-solid fa-location-dot me-1"></i> Endereços</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-info btn-sm" onclick="exportarDB()"><i class="fa-solid fa-download me-1"></i> Exportar JSON</button>
+                    <button class="btn btn-outline-secondary btn-sm text-white" onclick="abrirConfiguracoes()"><i class="fa-solid fa-gear me-1"></i> Configurações</button>
+                    <button class="btn btn-danger btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Sair</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+
+        <!-- VISTA: LOGIN / REGISTRO -->
+        <div id="view-auth" class="auth-card">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4 fw-bold text-primary">Acesso ao Sistema</h3>
+                    
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills nav-justified mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="tab-login" data-bs-toggle="pill" data-bs-target="#login-panel">Login</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="tab-register" data-bs-toggle="pill" data-bs-target="#register-panel">Novo Usuário</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Form Login -->
+                        <div class="tab-pane fade show active" id="login-panel">
+                            <form id="form-login" onsubmit="handleLogin(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Usuário</label>
+                                    <input type="text" id="login-user" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Senha</label>
+                                    <input type="password" id="login-pass" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                            </form>
+                        </div>
+
+                        <!-- Form Registro -->
+                        <div class="tab-pane fade" id="register-panel">
+                            <form id="form-register" onsubmit="handleRegister(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Novo Usuário</label>
+                                    <input type="text" id="reg-user" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Senha</label>
+                                    <input type="password" id="reg-pass" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Cadastrar Usuário</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <button class="btn btn-outline-secondary w-100 btn-sm" onclick="abrirConfiguracoes()">
+                        <i class="fa-solid fa-gear me-1"></i> Configurações (Importar/Exportar DB)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA: CLIENTES -->
+        <div id="view-clientes" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="fw-bold"><i class="fa-solid fa-users text-primary me-2"></i>Cadastro de Clientes</h2>
+                <button class="btn btn-primary" onclick="abrirModalCliente()"><i class="fa-solid fa-plus me-1"></i> Novo Cliente</button>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome Completo</th>
+                                    <th>CPF</th>
+                                    <th>Data Nasc.</th>
+                                    <th>Telefone / Celular</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tb-clientes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA: ENDEREÇOS -->
+        <div id="view-enderecos" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="fw-bold"><i class="fa-solid fa-location-dot text-primary me-2"></i>Gestão de Endereços</h2>
+                <button class="btn btn-primary" onclick="abrirModalEndereco()"><i class="fa-solid fa-plus me-1"></i> Novo Endereço</button>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>CEP</th>
+                                    <th>Endereço</th>
+                                    <th>Bairro</th>
+                                    <th>Cidade/UF</th>
+                                    <th>Principal</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tb-enderecos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: CLIENTE -->
+    <div class="modal fade" id="modalCliente" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblModalCliente">Novo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-cliente" onsubmit="salvarCliente(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="cliente-id">
+                        <div class="mb-3">
+                            <label class="form-label">Nome Completo *</label>
+                            <input type="text" id="cli-nome" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">CPF *</label>
+                            <input type="text" id="cli-cpf" class="form-control" maxlength="14" placeholder="000.000.000-00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Data de Nascimento *</label>
+                            <input type="date" id="cli-nasc" class="form-control" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Telefone</label>
+                                <input type="text" id="cli-tel" class="form-control">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Celular</label>
+                                <input type="text" id="cli-cel" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ENDEREÇO -->
+    <div class="modal fade" id="modalEndereco" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblModalEndereco">Novo Endereço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-endereco" onsubmit="salvarEndereco(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="end-id">
+                        <div class="mb-3">
+                            <label class="form-label">Cliente *</label>
+                            <select id="end-cliente-id" class="form-select" required></select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">CEP *</label>
+                                <div class="input-group">
+                                    <input type="text" id="end-cep" class="form-control" maxlength="9" placeholder="00000-000" required>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="buscarViaCEP()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Rua / Logradouro *</label>
+                                <input type="text" id="end-rua" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">Bairro *</label>
+                                <input type="text" id="end-bairro" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Cidade *</label>
+                                <input type="text" id="end-cidade" class="form-control" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Estado (UF) *</label>
+                                <input type="text" id="end-estado" class="form-control" maxlength="2" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">País *</label>
+                                <input type="text" id="end-pais" class="form-control" value="Brasil" required>
+                            </div>
+                            <div class="col-md-6 mb-3 d-flex align-items-end">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="end-principal">
+                                    <label class="form-check-label fw-bold" for="end-principal">
+                                        Endereço Principal
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Endereço</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAÇÕES / UPLOAD -->
+    <div class="modal fade" id="modalConfig" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Configurações do Banco de Dados</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Carregar Banco Pré-populado (JSON)</h6>
+                    <p class="text-muted small">Selecione um arquivo JSON contendo as tabelas do sistema para importar.</p>
+                    <input type="file" id="json-file-input" class="form-control mb-3" accept=".json">
+                    <button class="btn btn-success w-100 mb-3" onclick="importarDB()"><i class="fa-solid fa-upload me-1"></i> Importar DB</button>
+                    <hr>
+                    <h6>Exportar Banco Atual</h6>
+                    <button class="btn btn-outline-primary w-100" onclick="exportarDB()"><i class="fa-solid fa-download me-1"></i> Baixar JSON do Banco</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-muted py-3 my-4 border-top">
+        <small>Avaliação Técnica Agrosys &copy; 2026 — Desenvolvido por <strong>Octavio Berroa Arias</strong></small>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4.2.0/dist/alasql.min.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

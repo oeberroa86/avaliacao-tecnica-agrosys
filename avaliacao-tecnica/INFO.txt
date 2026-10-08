@@ -1,0 +1,43 @@
+========================================================================
+              AVALIAÇÃO TÉCNICA AGROSYS - MINI APLICAÇÃO CRUD
+========================================================================
+
+Desenvolvedor / Autor: Octavio Berroa Arias
+Data de Entrega: Outubro / 2026
+Tecnologias: HTML5, CSS3, JavaScript (Vanilla), AlaSQL, LocalStorage, Bootstrap 5
+
+------------------------------------------------------------------------
+DESCRICAO DO PROJETO:
+------------------------------------------------------------------------
+Sistema web para gerenciamento de Clientes, Enderecos e Usuarios com
+persistencia local via LocalStorage utilizando o motor AlaSQL.
+
+------------------------------------------------------------------------
+INSTRUÇÕES PARA EXECUÇÃO DO PROJETO:
+------------------------------------------------------------------------
+
+1. REQUISITOS DE SISTEMA:
+   - Qualquer navegador web moderno (Google Chrome, Mozilla Firefox, Microsoft Edge).
+   - Não é necessária a instalação de servidores web (como Apache/Nginx) ou SGBDs adicionais.
+
+2. COMO EXECUTAR:
+   - Extraia a pasta compactada no seu computador.
+   - Abra o arquivo 'index.html' diretamente dando dois cliques ou arrastando-o para o navegador.
+
+3. CREDENCIAIS PADRÃO DE ACESSO:
+   - Usuário: admin
+   - Senha: 123
+   (Também é possível cadastrar novos usuários através da aba "Novo Usuário" na tela inicial).
+
+4. BANCO DE DADOS E CONFIGURAÇÕES:
+   - O projeto utiliza a biblioteca AlaSQL.js integrada ao LocalStorage do navegador.
+   - Para carregar o banco de dados de teste/demonstração:
+     1. Na tela inicial ou no menu superior, clique em "Configurações".
+     2. Selecione o arquivo 'sample_db.json' que acompanha este projeto.
+     3. Clique em "Importar DB".
+
+5. RECURSOS ADICIONAIS IMPLEMENTADOS:
+   - Validação estrita de unicidade de Usuários e CPFs.
+   - Garantia da regra de negócio de Endereço Principal por cliente (1:N).
+   - Integração automática com a API ViaCEP ao pesquisar pelo CEP informado.
+   - Layout totalmente responsivo (Mobile Friendly) utilizando Bootstrap 5.

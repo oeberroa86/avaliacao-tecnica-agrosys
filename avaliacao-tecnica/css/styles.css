@@ -1,0 +1,28 @@
+/*
+ * ====================================================================
+ * Projeto: Avaliação Técnica Agrosys - CRUD Web
+ * Autor: Octavio Berroa Arias
+ * Data: Outubro / 2026
+ * Descrição: Estilos customizados e utilitários para a interface
+ * ====================================================================
+ */
+ 
+body {
+    background-color: #f4f6f9;
+}
+
+.auth-card {
+    max-width: 420px;
+    margin: 80px auto;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-principal {
+    font-size: 0.75rem;
+}
